@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>macOS Palo Alto 16.7</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f0f0f5;
+        }
+        #top-bar {
+            height: 40px;
+            background-color: #333;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        #top-bar img {
+            height: 30px;
+            margin-right: 10px;
+        }
+        #top-bar .title {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 18px;
+        }
+        #top-bar .icons {
+            display: flex;
+            align-items: center;
+        }
+        #top-bar .icons button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        #desktop {
+            padding-top: 40px;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background-color: #f0f0f5;
+        }
+        .window {
+            width: 400px;
+            height: 300px;
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+            z-index: 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #007aff;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            cursor: move;
+        }
+        .window-buttons {
+            display: flex;
+        }
+        .window-buttons button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin: 0 2px;
+            font-size: 16px;
+            color: white;
+        }
+        .window-buttons .minimize {
+            color: #4CAF50; /* 緑 */
+        }
+        .window-buttons .maximize {
+            color: #FFEB3B; /* 黄色 */
+        }
+        .window-buttons .close {
+            color: #F44336; /* 赤 */
+        }
+        .window-content {
+            padding: 10px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+        }
+        #start-menu {
+            position: fixed;
+            bottom: 70px;
+            left: 10px;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+            border-radius: 8px;
+        }
+        #start-menu button {
+            width: 100%;
+            padding: 10px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+        }
+        #start-menu button:hover {
+            background-color: #007aff;
+        }
+        #language-menu {
+            position: fixed;
+            bottom: 70px;
+            right: 10px;
+            width: 150px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+            border-radius: 8px;
+        }
+        #language-menu button {
+            width: 100%;
+            padding: 10px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+        }
+        #language-menu button:hover {
+            background-color: #007aff;
+        }
+        #context-menu {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            border: 1px solid #ccc;
+            display: none;
+            z-index: 1000;
+        }
+        #context-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 5px 0;
+        }
+        #context-menu ul li {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #context-menu ul li:hover {
+            background-color: #555;
+        }
+        .app-icon {
+            font-size: 24px;
+        }
+        .app-icon-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+            margin: 5px;
+        }
+        .app-icon-button:hover {
+            color: #007aff;
+        }
+        #safari, #calculator {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="top-bar">
+        <img src="logo.png" alt="macOS Palo Alto" />
+        <div class="title" id="title">macOS Palo Alto 16.7</div>
+        <div class="icons">
+            <button onclick="openStartMenu()">🔲</button>
+            <button onclick="openLanguageMenu()">🌐</button>
+            <button onclick="shutdown()">💤</button>
+        </div>
+    </div>
+    <div id="desktop" oncontextmenu="showContextMenu(event)">
+        <!-- Safariブラウザ -->
+        <div id="safari" class="window">
+            <div class="window-header">
+                <span id="safari-title">Safari</span>
+                <div class="window-buttons">
+                    <button class="minimize" onclick="minimizeWindow('safari')">−</button>
+                    <button class="maximize" onclick="maximizeWindow('safari')">⬜</button>
+                    <button class="close" onclick="closeWindow('safari')">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe src="https://www.apple.com" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- 計算機 -->
+        <div id="calculator" class="window">
+            <div class="window-header">
+                <span id="calculator-title">計算機</span>
+                <div class="window-buttons">
+                    <button class="minimize" onclick="minimizeWindow('calculator')">−</button>
+                    <button class="maximize" onclick="maximizeWindow('calculator')">⬜</button>
+                    <button class="close" onclick="closeWindow('calculator')">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe src="https://www.calculator.net" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- その他のアプリウィンドウ -->
+        <div id="cmd" class="window">
+            <div class="window-header">
+                <span id="cmd-title">CMD</span>
+                <div class="window-buttons">
+                    <button class="minimize" onclick="minimizeWindow('cmd')">−</button>
+                    <button class="maximize" onclick="maximizeWindow('cmd')">⬜</button>
+                    <button class="close" onclick="closeWindow('cmd')">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <textarea style="width: 100%; height: 100%;"></textarea>
+            </div>
+        </div>
+        <div id="fileexplorer" class="window">
+            <div class="window-header">
+                <span id="fileexplorer-title">ファイルエクスプローラー</span>
+                <div class="window-buttons">
+                    <button class="minimize" onclick="minimizeWindow('fileexplorer')">−</button>
+                    <button class="maximize" onclick="maximizeWindow('fileexplorer')">⬜</button>
+                    <button class="close" onclick="closeWindow('fileexplorer')">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <input type="file" id="fileUpload" multiple>
+                <div id="fileList"></div>
+            </div>
+        </div>
+        <div id="paint" class="window">
+            <div class="window-header">
+                <span id="paint-title">ペイント</span>
+                <div class="window-buttons">
+                    <button class="minimize" onclick="minimizeWindow('paint')">−</button>
+                    <button class="maximize" onclick="maximizeWindow('paint')">⬜</button>
+                    <button class="close" onclick="closeWindow('paint')">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <canvas id="paintCanvas" width="100%" height="100%"></canvas>
+            </div>
+        </div>
+        <div id="calendar" class="window">
+            <div class="window-header">
+                <span id="calendar-title">カレンダー</span>
+                <div class="window-buttons">
+                    <button class="minimize" onclick="minimizeWindow('calendar')">−</button>
+                    <button class="maximize" onclick="maximizeWindow('calendar')">⬜</button>
+                    <button class="close" onclick="closeWindow('calendar')">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe src="https://calendar.google.com" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="settings" class="window">
+            <div class="window-header">
+                <span id="settings-title">設定</span>
+                <div class="window-buttons">
+                    <button class="minimize" onclick="minimizeWindow('settings')">−</button>
+                    <button class="maximize" onclick="maximizeWindow('settings')">⬜</button>
+                    <button class="close" onclick="closeWindow('settings')">×</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <div id="settings-content">
+                    <div id="settings-content-en" style="display: block;">
+                        <p>Settings content goes here.</p>
+                        <button onclick="changeLanguage('ja')">Switch to Japanese</button>
+                    </div>
+                    <div id="settings-content-ja" style="display: none;">
+                        <p>設定の内容がここに表示されます。</p>
+                        <button onclick="changeLanguage('en')">Switch to English</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="start-menu">
+        <button onclick="openWindow('cmd')">🖥 CMD</button>
+        <button onclick="openWindow('fileexplorer')">📁 ファイルエクスプローラー</button>
+        <button onclick="openWindow('paint')">🎨 ペイント</button>
+        <button onclick="openWindow('calculator')">🧮 計算機</button>
+        <button onclick="openWindow('calendar')">📅 カレンダー</button>
+        <button onclick="openWindow('settings')">⚙️ 設定</button>
+    </div>
+    <div id="language-menu">
+        <button onclick="changeLanguage('en')">English</button>
+        <button onclick="changeLanguage('ja')">日本語</button>
+    </div>
+    <div id="context-menu">
+        <ul>
+            <li onclick="openWindow('settings')">Settings</li>
+            <li onclick="shutdown()">Shutdown</li>
+        </ul>
+    </div>
+    <script>
+        function openStartMenu() {
+            var menu = document.getElementById('start-menu');
+            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+        }
+
+        function openLanguageMenu() {
+            var menu = document.getElementById('language-menu');
+            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+        }
+
+        function shutdown() {
+            // 閉じる処理（ここではすべてのウィンドウを閉じる）
+            var windows = document.querySelectorAll('.window');
+            windows.forEach(win => win.style.display = 'none');
+        }
+
+        function showContextMenu(event) {
+            event.preventDefault();
+            var menu = document.getElementById('context-menu');
+            menu.style.top = event.pageY + 'px';
+            menu.style.left = event.pageX + 'px';
+            menu.style.display = 'block';
+        }
+
+        function hideContextMenu() {
+            var menu = document.getElementById('context-menu');
+            menu.style.display = 'none';
+        }
+
+        function minimizeWindow(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function maximizeWindow(id) {
+            var win = document.getElementById(id);
+            if (win.style.width === '100vw') {
+                win.style.width = '400px';
+                win.style.height = '300px';
+            } else {
+                win.style.width = '100vw';
+                win.style.height = '100vh';
+            }
+        }
+
+        function closeWindow(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function openWindow(id) {
+            var win = document.getElementById(id);
+            win.style.display = 'block';
+            win.style.top = '50px';
+            win.style.left = '50px';
+        }
+
+        function changeLanguage(lang) {
+            var contentEn = document.getElementById('settings-content-en');
+            var contentJa = document.getElementById('settings-content-ja');
+            if (lang === 'ja') {
+                contentEn.style.display = 'none';
+                contentJa.style.display = 'block';
+            } else {
+                contentEn.style.display = 'block';
+                contentJa.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.matches('#context-menu') && !event.target.matches('#context-menu *')) {
+                hideContextMenu();
+            }
+            if (!event.target.matches('#start-menu') && !event.target.matches('#start-menu *')) {
+                document.getElementById('start-menu').style.display = 'none';
+            }
+            if (!event.target.matches('#language-menu') && !event.target.matches('#language-menu *')) {
+                document.getElementById('language-menu').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
