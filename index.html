@@ -49,7 +49,7 @@
         #desktop {
             padding-top: 40px;
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 80px);
             position: relative;
             background-color: #f0f0f5;
         }
@@ -185,6 +185,32 @@
         #safari, #calculator {
             display: none;
         }
+        #bottom-bar {
+            height: 40px;
+            background-color: #333;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
+        }
+        #bottom-bar .icons {
+            display: flex;
+            align-items: center;
+        }
+        #bottom-bar .icons button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -195,17 +221,7 @@
             <button onclick="openStartMenu()">🔲</button>
             <button onclick="openLanguageMenu()">🌐</button>
             <button onclick="shutdown()">💤</button>
-    </div>
-    <div id="language-menu">
         </div>
-    <div id="start-menu">
-        <button onclick="openWindow('cmd')">🖥 CMD</button>
-        <button onclick="openWindow('fileexplorer')">📁 ファイルエクスプローラー</button>
-        <button onclick="openWindow('paint')">🎨 ペイント</button>
-        <button onclick="openWindow('calculator')">🧮 計算機</button>
-        <button onclick="openWindow('calendar')">📅 カレンダー</button>
-        <button onclick="openWindow('settings')">⚙️ 設定</button>
-    </div> 
     </div>
     <div id="desktop" oncontextmenu="showContextMenu(event)">
         <!-- Safariブラウザ -->
@@ -219,7 +235,11 @@
                 </div>
             </div>
             <div class="window-content">
-                <iframe src="https://sakalt.github.io/macOS-palo-alto-fiction-/Newsafari.html" style="width: 100%; height: 100%; border: none;"></iframe>
+                <div id="safari-tabs">
+                    <div class="safari-tab" contenteditable="true">Bing</div>
+                    <button onclick="addTab()">＋</button>
+                </div>
+                <iframe src="https://www.bing.com" style="width: 100%; height: calc(100% - 40px); border: none;"></iframe>
             </div>
         </div>
 
@@ -276,7 +296,7 @@
                 </div>
             </div>
             <div class="window-content">
-                <canvas id="paintCanvas" width="100%" height="100%"></canvas>
+                <iframe src="https://paint.js.org" style="width: 100%; height: calc(100% - 40px); border: none;"></iframe>
             </div>
         </div>
         <div id="calendar" class="window">
@@ -289,7 +309,7 @@
                 </div>
             </div>
             <div class="window-content">
-                <iframe src="https://calendar.google.com" style="width: 100%; height: 100%; border: none;"></iframe>
+                <p>Calendar app content goes here.</p>
             </div>
         </div>
         <div id="settings" class="window">
@@ -302,116 +322,134 @@
                 </div>
             </div>
             <div class="window-content">
-                <div id="settings-content">
-                    <div id="settings-content-en" style="display: block;">
-                        <p>Settings content goes here.</p>
-                        <button onclick="changeLanguage('ja')">Switch to Japanese</button>
-                    </div>
-                    <div id="settings-content-ja" style="display: none;">
-                        <p>設定の内容がここに表示されます。</p>
-                        <button onclick="changeLanguage('en')">Switch to English</button>
-                    </div>
-                </div>
+                <p>Settings app content goes here.</p>
             </div>
         </div>
     </div>
+    <div id="bottom-bar">
+        <div class="icons">
+            <button onclick="openApp('safari')">🌐</button>
+            <button onclick="openApp('calculator')">🧮</button>
+            <button onclick="openApp('cmd')">🖥️</button>
+            <button onclick="openApp('fileexplorer')">📁</button>
+            <button onclick="openApp('paint')">🎨</button>
+            <button onclick="openApp('calendar')">📅</button>
+            <button onclick="openApp('settings')">⚙️</button>
+        </div>
+    </div>
     <div id="start-menu">
-        <button onclick="openWindow('cmd')">🖥 CMD</button>
-        <button onclick="openWindow('fileexplorer')">📁 ファイルエクスプローラー</button>
-        <button onclick="openWindow('paint')">🎨 ペイント</button>
-        <button onclick="openWindow('calculator')">🧮 計算機</button>
-        <button onclick="openWindow('calendar')">📅 カレンダー</button>
-        <button onclick="openWindow('settings')">⚙️ 設定</button>
+        <button onclick="openApp('safari')">Safari</button>
+        <button onclick="openApp('calculator')">計算機</button>
+        <button onclick="openApp('cmd')">CMD</button>
+        <button onclick="openApp('fileexplorer')">ファイルエクスプローラー</button>
+        <button onclick="openApp('paint')">ペイント</button>
+        <button onclick="openApp('calendar')">カレンダー</button>
+        <button onclick="openApp('settings')">設定</button>
     </div>
     <div id="language-menu">
-        <button onclick="changeLanguage('en')">English</button>
-        <button onclick="changeLanguage('ja')">日本語</button>
+        <button onclick="setLanguage('ja')">日本語</button>
+        <button onclick="setLanguage('en')">English</button>
     </div>
     <div id="context-menu">
         <ul>
-            <li onclick="openWindow('settings')">Settings</li>
-            <li onclick="shutdown()">Shutdown</li>
+            <li onclick="openApp('safari')">Safari</li>
+            <li onclick="openApp('calculator')">計算機</li>
+            <li onclick="openApp('cmd')">CMD</li>
+            <li onclick="openApp('fileexplorer')">ファイルエクスプローラー</li>
+            <li onclick="openApp('paint')">ペイント</li>
+            <li onclick="openApp('calendar')">カレンダー</li>
+            <li onclick="openApp('settings')">設定</li>
         </ul>
     </div>
     <script>
+        let language = 'ja';
+
+        function openApp(appId) {
+            document.querySelectorAll('.window').forEach(window => {
+                window.style.display = 'none';
+            });
+            const appWindow = document.getElementById(appId);
+            if (appWindow) {
+                appWindow.style.display = 'block';
+                appWindow.style.zIndex = '1000';
+            }
+            closeStartMenu();
+            closeLanguageMenu();
+        }
+
         function openStartMenu() {
-            var menu = document.getElementById('start-menu');
-            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+            const startMenu = document.getElementById('start-menu');
+            startMenu.style.display = startMenu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function closeStartMenu() {
+            document.getElementById('start-menu').style.display = 'none';
         }
 
         function openLanguageMenu() {
-            var menu = document.getElementById('language-menu');
-            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+            const languageMenu = document.getElementById('language-menu');
+            languageMenu.style.display = languageMenu.style.display === 'none' ? 'block' : 'none';
         }
 
-        function shutdown() {
-            // 閉じる処理（ここではすべてのウィンドウを閉じる）
-            var windows = document.querySelectorAll('.window');
-            windows.forEach(win => win.style.display = 'none');
+        function closeLanguageMenu() {
+            document.getElementById('language-menu').style.display = 'none';
+        }
+
+        function setLanguage(lang) {
+            language = lang;
+            closeLanguageMenu();
+            alert('Language set to ' + (lang === 'ja' ? '日本語' : 'English'));
         }
 
         function showContextMenu(event) {
             event.preventDefault();
-            var menu = document.getElementById('context-menu');
-            menu.style.top = event.pageY + 'px';
-            menu.style.left = event.pageX + 'px';
-            menu.style.display = 'block';
+            const contextMenu = document.getElementById('context-menu');
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${event.pageX}px`;
+            contextMenu.style.top = `${event.pageY}px`;
         }
 
-        function hideContextMenu() {
-            var menu = document.getElementById('context-menu');
-            menu.style.display = 'none';
-        }
-
-        function minimizeWindow(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        function maximizeWindow(id) {
-            var win = document.getElementById(id);
-            if (win.style.width === '100vw') {
-                win.style.width = '400px';
-                win.style.height = '300px';
-            } else {
-                win.style.width = '100vw';
-                win.style.height = '100vh';
-            }
-        }
-
-        function closeWindow(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        function openWindow(id) {
-            var win = document.getElementById(id);
-            win.style.display = 'block';
-            win.style.top = '50px';
-            win.style.left = '50px';
-        }
-
-        function changeLanguage(lang) {
-            var contentEn = document.getElementById('settings-content-en');
-            var contentJa = document.getElementById('settings-content-ja');
-            if (lang === 'ja') {
-                contentEn.style.display = 'none';
-                contentJa.style.display = 'block';
-            } else {
-                contentEn.style.display = 'block';
-                contentJa.style.display = 'none';
-            }
-        }
-
-        document.addEventListener('click', function(event) {
-            if (!event.target.matches('#context-menu') && !event.target.matches('#context-menu *')) {
-                hideContextMenu();
-            }
-            if (!event.target.matches('#start-menu') && !event.target.matches('#start-menu *')) {
-                document.getElementById('start-menu').style.display = 'none';
-            }
-            if (!event.target.matches('#language-menu') && !event.target.matches('#language-menu *')) {
-                document.getElementById('language-menu').style.display = 'none';
-            }
+        document.addEventListener('click', () => {
+            document.getElementById('context-menu').style.display = 'none';
         });
+
+        function shutdown() {
+            alert('Shutting down...');
+            window.close();
+        }
+
+        function minimizeWindow(appId) {
+            const appWindow = document.getElementById(appId);
+            if (appWindow) {
+                appWindow.style.display = 'none';
+            }
+        }
+
+        function maximizeWindow(appId) {
+            const appWindow = document.getElementById(appId);
+            if (appWindow) {
+                appWindow.style.width = '100%';
+                appWindow.style.height = '100%';
+                appWindow.style.top = '0';
+                appWindow.style.left = '0';
+            }
+        }
+
+        function closeWindow(appId) {
+            const appWindow = document.getElementById(appId);
+            if (appWindow) {
+                appWindow.style.display = 'none';
+            }
+        }
+
+        function addTab() {
+            const safariTabs = document.getElementById('safari-tabs');
+            const newTab = document.createElement('div');
+            newTab.classList.add('safari-tab');
+            newTab.setAttribute('contenteditable', 'true');
+            newTab.textContent = 'New Tab';
+            safariTabs.insertBefore(newTab, safariTabs.lastElementChild);
+        }
     </script>
 </body>
 </html>
