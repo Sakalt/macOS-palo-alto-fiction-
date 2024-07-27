@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -135,29 +135,30 @@
     <div id="menu-bar">
         <div class="menu">
             <span class="menu-item"></span>
-            <span class="menu-item">File</span>
-            <span class="menu-item">Edit</span>
-            <span class="menu-item">View</span>
-            <span class="menu-item">Go</span>
-            <span class="menu-item">Window</span>
-            <span class="menu-item">Help</span>
+            <span class="menu-item">ファイル</span>
+            <span class="menu-item">編集</span>
+            <span class="menu-item">表示</span>
+            <span class="menu-item">移動</span>
+            <span class="menu-item">ウィンドウ</span>
+            <span class="menu-item">ヘルプ</span>
         </div>
         <div class="menu">
             <span class="menu-item">2026</span>
         </div>
     </div>
     <div id="desktop">
-        <button onclick="openApp('app-weather')">Weather App</button>
-        <button onclick="openApp('app-tv')">TV App</button>
-        <button onclick="openApp('app-news')">news App</button>
-        <button onclick="openApp('app-dictionary')">dict App</button>
-        <button onclick="openApp('app-calculator')">calc App</button>
+        <button onclick="openApp('app-weather')">天気アプリ</button>
+        <button onclick="openApp('app-tv')">テレビアプリ</button>
+        <button onclick="openApp('app-news')">ニュースアプリ</button>
+        <button onclick="openApp('app-dictionary')">辞書アプリ</button>
+        <button onclick="openApp('app-calculator')">電卓アプリ</button>
+        <button onclick="openApp('app-browser')">ブラウザ</button>
         <!-- アプリケーションウィンドウ -->
         <div id="app-weather" class="app-window">
             <div class="app-window-header">
-                <span>Weather</span>
+                <span>天気</span>
                 <div class="window-buttons">
-                    <div class="window-button" onclick="closeWindow('app-weather')"></div>
+                    <div class="window-button" onclick="closeApp('app-weather')"></div>
                     <div class="window-button yellow"></div>
                     <div class="window-button green"></div>
                 </div>
@@ -168,9 +169,9 @@
         </div>
         <div id="app-tv" class="app-window">
             <div class="app-window-header">
-                <span>TV</span>
+                <span>テレビ</span>
                 <div class="window-buttons">
-                    <div class="window-button" onclick="closeWindow('app-tv')"></div>
+                    <div class="window-button" onclick="closeApp('app-tv')"></div>
                     <div class="window-button yellow"></div>
                     <div class="window-button green"></div>
                 </div>
@@ -181,9 +182,9 @@
         </div>
         <div id="app-news" class="app-window">
             <div class="app-window-header">
-                <span>News</span>
+                <span>ニュース</span>
                 <div class="window-buttons">
-                    <div class="window-button" onclick="closeWindow('app-news')"></div>
+                    <div class="window-button" onclick="closeApp('app-news')"></div>
                     <div class="window-button yellow"></div>
                     <div class="window-button green"></div>
                 </div>
@@ -194,9 +195,9 @@
         </div>
         <div id="app-dictionary" class="app-window">
             <div class="app-window-header">
-                <span>Dictionary</span>
+                <span>辞書</span>
                 <div class="window-buttons">
-                    <div class="window-button" onclick="closeWindow('app-dictionary')"></div>
+                    <div class="window-button" onclick="closeApp('app-dictionary')"></div>
                     <div class="window-button yellow"></div>
                     <div class="window-button green"></div>
                 </div>
@@ -207,9 +208,9 @@
         </div>
         <div id="app-calculator" class="app-window">
             <div class="app-window-header">
-                <span>Calculator</span>
+                <span>電卓</span>
                 <div class="window-buttons">
-                    <div class="window-button" onclick="closeWindow('app-calculator')"></div>
+                    <div class="window-button" onclick="closeApp('app-calculator')"></div>
                     <div class="window-button yellow"></div>
                     <div class="window-button green"></div>
                 </div>
@@ -218,24 +219,41 @@
                 <iframe src="https://sakalt.github.io/macOS-palo-alto-fiction-/calc.html"></iframe>
             </div>
         </div>
+        <div id="app-browser" class="app-window">
+            <div class="app-window-header">
+                <span>ブラウザ</span>
+                <div class="window-buttons">
+                    <div class="window-button" onclick="closeApp('app-browser')"></div>
+                    <div class="window-button yellow"></div>
+                    <div class="window-button green"></div>
+                </div>
+            </div>
+            <div class="app-window-content">
+                <input type="text" id="browser-url" placeholder="URLを入力" style="width: 80%;">
+                <button onclick="loadBrowser()">開く</button>
+                <iframe id="browser-frame" src=""></iframe>
+            </div>
+        </div>
         <!-- 他のアプリケーションウィンドウ -->
         <!-- テキストファイル作成ボタン -->
-        <button onclick="createTextFile()">Create Text File</button>
+        <button onclick="createTextFile()">テキストファイルを作成</button>
     </div>
     <script>
-        function closeWindow(appId) {
+        function closeApp(appId) {
             document.getElementById(appId).style.display = 'none';
+            saveToLocalStorage();
         }
 
-        function openWindow(appId) {
+        function openApp(appId) {
             document.getElementById(appId).style.display = 'flex';
+            saveToLocalStorage();
         }
 
         function createTextFile() {
             const desktop = document.getElementById('desktop');
             const textFile = document.createElement('div');
             textFile.className = 'text-file';
-            textFile.innerHTML = '<img src="textfile.png" alt="Text File"><p>New Text File</p>';
+            textFile.innerHTML = '<img src="textfile.png" alt="Text File"><p>新しいテキストファイル</p>';
             desktop.appendChild(textFile);
             saveToLocalStorage();
         }
@@ -260,13 +278,13 @@
         document.addEventListener('mousedown', function(e) {
             if (e.target.closest('.app-window-header')) {
                 const header = e.target.closest('.app-window-header');
-                const window = header.parentElement;
-                let shiftX = e.clientX - window.getBoundingClientRect().left;
-                let shiftY = e.clientY - window.getBoundingClientRect().top;
+                const appWindow = header.parentElement;
+                let shiftX = e.clientX - appWindow.getBoundingClientRect().left;
+                let shiftY = e.clientY - appWindow.getBoundingClientRect().top;
 
                 function moveAt(pageX, pageY) {
-                    window.style.left = pageX - shiftX + 'px';
-                    window.style.top = pageY - shiftY + 'px';
+                    appWindow.style.left = pageX - shiftX + 'px';
+                    appWindow.style.top = pageY - shiftY + 'px';
                 }
 
                 function onMouseMove(event) {
@@ -285,6 +303,12 @@
                 };
             }
         });
+
+        // ブラウザのURLをロードする機能
+        function loadBrowser() {
+            const url = document.getElementById('browser-url').value;
+            document.getElementById('browser-frame').src = url;
+        }
     </script>
 </body>
 </html>
