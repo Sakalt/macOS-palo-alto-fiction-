@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>macOS Sacramento (ver24)</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #menu-bar {
+            background-color: #333;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+        }
+
+        #menu-bar .menu {
+            display: flex;
+            gap: 15px;
+        }
+
+        #menu-bar .menu-item {
+            cursor: pointer;
+        }
+
+        #desktop {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding: 20px;
+            background-image: url('background.gif');
+            background-size: cover;
+            position: relative;
+        }
+
+        .app-window {
+            background-color: #fff;
+            color: #000;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin: 10px;
+            display: none;
+            flex-direction: column;
+            width: 400px;
+            height: 300px;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+        }
+
+        .app-window-header {
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .app-window-content {
+            flex: 1;
+            padding: 10px;
+            overflow: auto;
+        }
+
+        .window-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .window-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: red;
+            cursor: pointer;
+        }
+
+        .window-button.yellow {
+            background-color: yellow;
+        }
+
+        .window-button.green {
+            background-color: green;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .text-file {
+            width: 100px;
+            height: 100px;
+            background-color: beige;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .text-file img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .text-file p {
+            margin: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu-bar">
+        <div class="menu">
+            <span class="menu-item"></span>
+            <span class="menu-item">File</span>
+            <span class="menu-item">Edit</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Go</span>
+            <span class="menu-item">Window</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="menu">
+            <span class="menu-item">2026</span>
+        </div>
+    </div>
+    <div id="desktop">
+        <!-- アプリケーションウィンドウ -->
+        <div id="app-weather" class="app-window">
+            <div class="app-window-header">
+                <span>Weather</span>
+                <div class="window-buttons">
+                    <div class="window-button" onclick="closeWindow('app-weather')"></div>
+                    <div class="window-button yellow"></div>
+                    <div class="window-button green"></div>
+                </div>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://weather.yahoo.co.jp/weather/"></iframe>
+            </div>
+        </div>
+        <div id="app-tv" class="app-window">
+            <div class="app-window-header">
+                <span>TV</span>
+                <div class="window-buttons">
+                    <div class="window-button" onclick="closeWindow('app-tv')"></div>
+                    <div class="window-button yellow"></div>
+                    <div class="window-button green"></div>
+                </div>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://tver.jp/"></iframe>
+            </div>
+        </div>
+        <div id="app-news" class="app-window">
+            <div class="app-window-header">
+                <span>News</span>
+                <div class="window-buttons">
+                    <div class="window-button" onclick="closeWindow('app-news')"></div>
+                    <div class="window-button yellow"></div>
+                    <div class="window-button green"></div>
+                </div>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://news.yahoo.co.jp/"></iframe>
+            </div>
+        </div>
+        <div id="app-dictionary" class="app-window">
+            <div class="app-window-header">
+                <span>Dictionary</span>
+                <div class="window-buttons">
+                    <div class="window-button" onclick="closeWindow('app-dictionary')"></div>
+                    <div class="window-button yellow"></div>
+                    <div class="window-button green"></div>
+                </div>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://amuhiku.netlify.app"></iframe>
+            </div>
+        </div>
+        <div id="app-calculator" class="app-window">
+            <div class="app-window-header">
+                <span>Calculator</span>
+                <div class="window-buttons">
+                    <div class="window-button" onclick="closeWindow('app-calculator')"></div>
+                    <div class="window-button yellow"></div>
+                    <div class="window-button green"></div>
+                </div>
+            </div>
+            <div class="app-window-content">
+                <iframe src="https://sakalt.github.io/macOS-palo-alto-fiction-/calc.html"></iframe>
+            </div>
+        </div>
+        <!-- 他のアプリケーションウィンドウ -->
+        <!-- テキストファイル作成ボタン -->
+        <button onclick="createTextFile()">Create Text File</button>
+    </div>
+    <script>
+        function closeWindow(appId) {
+            document.getElementById(appId).style.display = 'none';
+        }
+
+        function openWindow(appId) {
+            document.getElementById(appId).style.display = 'flex';
+        }
+
+        function createTextFile() {
+            const desktop = document.getElementById('desktop');
+            const textFile = document.createElement('div');
+            textFile.className = 'text-file';
+            textFile.innerHTML = '<img src="textfile.png" alt="Text File"><p>New Text File</p>';
+            desktop.appendChild(textFile);
+            saveToLocalStorage();
+        }
+
+        function saveToLocalStorage() {
+            const desktopContent = document.getElementById('desktop').innerHTML;
+            localStorage.setItem('desktopContent', desktopContent);
+        }
+
+        function loadFromLocalStorage() {
+            const savedContent = localStorage.getItem('desktopContent');
+            if (savedContent) {
+                document.getElementById('desktop').innerHTML = savedContent;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+        });
+
+        // ウィンドウのドラッグ機能
+        document.addEventListener('mousedown', function(e) {
+            if (e.target.closest('.app-window-header')) {
+                const header = e.target.closest('.app-window-header');
+                const window = header.parentElement;
+                let shiftX = e.clientX - window.getBoundingClientRect().left;
+                let shiftY = e.clientY - window.getBoundingClientRect().top;
+
+                function moveAt(pageX, pageY) {
+                    window.style.left = pageX - shiftX + 'px';
+                    window.style.top = pageY - shiftY + 'px';
+                }
+
+                function onMouseMove(event) {
+                    moveAt(event.pageX, event.pageY);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+
+                document.onmouseup = function() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.onmouseup = null;
+                };
+
+                header.ondragstart = function() {
+                    return false;
+                };
+            }
+        });
+    </script>
+</body>
+</html>
