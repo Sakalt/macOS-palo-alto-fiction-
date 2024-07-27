@@ -1,400 +1,158 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>macOS Sacramento (ver24)</title>
+    <title>macOS Sacramento Calculator</title>
     <style>
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: #2c3e50;
-            color: #ecf0f1;
             margin: 0;
-            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
+            background-color: #f0f0f5;
+        }
+        #calculator {
+            width: 300px;
+            height: 500px;
+            border-radius: 10px;
             overflow: hidden;
-        }
-
-        #menu-bar {
-            background-color: #333;
-            padding: 5px 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
+            flex-direction: column;
         }
-
-        #menu-bar .menu {
-            display: flex;
-            gap: 15px;
-        }
-
-        #menu-bar .menu-item {
-            cursor: pointer;
-        }
-
-        #desktop {
+        #display {
             flex: 1;
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            padding: 20px;
-            background-image: url('background.gif');
-            background-size: cover;
-            position: relative;
-        }
-
-        .app-window {
-            background-color: #fff;
-            color: #000;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            margin: 10px;
-            display: none;
-            flex-direction: column;
-            width: 400px;
-            height: 300px;
-            position: absolute;
-            top: 50px;
-            left: 50px;
-        }
-
-        .app-window-header {
-            background-color: #333;
+            background-color: #2c2c2e;
             color: #fff;
-            padding: 5px 10px;
+            font-size: 48px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
-            cursor: move;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-
-        .app-window-content {
-            flex: 1;
             padding: 10px;
-            overflow: auto;
+            box-sizing: border-box;
         }
-
-        .window-buttons {
-            display: flex;
-            gap: 5px;
+        #buttons {
+            flex: 2;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
         }
-
-        .window-button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: red;
-            cursor: pointer;
-        }
-
-        .window-button.yellow {
-            background-color: yellow;
-        }
-
-        .window-button.green {
-            background-color: green;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .text-file {
-            width: 100px;
-            height: 100px;
-            background-color: beige;
-            border: none;
-            padding: 10px;
-            margin: 5px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .text-file img {
-            width: 50px;
-            height: 50px;
-        }
-
-        .text-file p {
-            margin: 0;
-            text-align: center;
-        }
-
-        .context-menu {
-            position: absolute;
+        button {
+            font-size: 24px;
+            border: 1px solid #ddd;
             background-color: #fff;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-        }
-
-        .context-menu-item {
-            padding: 8px 12px;
+            outline: none;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
-
-        .context-menu-item:hover {
-            background-color: #f0f0f0;
+        button:active {
+            background-color: #ddd;
         }
-
-        .bottom-bar {
-            background-color: #333;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
+        .operator {
+            background-color: #f8c291;
         }
-
-        .bottom-bar button {
-            margin: 0 5px;
+        .operator:active {
+            background-color: #e58e26;
+        }
+        .equals {
+            background-color: #f7b731;
+            grid-column: span 2;
+        }
+        .equals:active {
+            background-color: #fa8231;
+        }
+        .clear {
+            grid-column: span 2;
         }
     </style>
 </head>
 <body>
-    <div id="menu-bar">
-        <div class="menu">
-            <span class="menu-item"></span>
-            <span class="menu-item">ファイル</span>
-            <span class="menu-item">編集</span>
-            <span class="menu-item">表示</span>
-            <span class="menu-item">移動</span>
-            <span class="menu-item">ウィンドウ</span>
-            <span class="menu-item">ヘルプ</span>
+    <div id="calculator">
+        <div id="display">0</div>
+        <div id="buttons">
+            <button onclick="clearDisplay()" class="clear">C</button>
+            <button onclick="operate('/')">÷</button>
+            <button onclick="operate('*')">×</button>
+            <button onclick="input('7')">7</button>
+            <button onclick="input('8')">8</button>
+            <button onclick="input('9')">9</button>
+            <button onclick="operate('-')">−</button>
+            <button onclick="input('4')">4</button>
+            <button onclick="input('5')">5</button>
+            <button onclick="input('6')">6</button>
+            <button onclick="operate('+')">+</button>
+            <button onclick="input('1')">1</button>
+            <button onclick="input('2')">2</button>
+            <button onclick="input('3')">3</button>
+            <button onclick="calculate()" class="equals">=</button>
+            <button onclick="input('0')" class="span-two">0</button>
+            <button onclick="input('.')">.</button>
         </div>
-        <div class="menu">
-            <span class="menu-item">2026</span>
-        </div>
-    </div>
-    <div id="desktop">
-        <!-- アプリケーションウィンドウ -->
-        <div id="app-weather" class="app-window">
-            <div class="app-window-header">
-                <span>天気</span>
-                <div class="window-buttons">
-                    <div class="window-button" onclick="closeApp('app-weather')"></div>
-                    <div class="window-button yellow"></div>
-                    <div class="window-button green"></div>
-                </div>
-            </div>
-            <div class="app-window-content">
-                <iframe src="https://weather.yahoo.co.jp/weather/"></iframe>
-            </div>
-        </div>
-        <div id="app-tv" class="app-window">
-            <div class="app-window-header">
-                <span>テレビ</span>
-                <div class="window-buttons">
-                    <div class="window-button" onclick="closeApp('app-tv')"></div>
-                    <div class="window-button yellow"></div>
-                    <div class="window-button green"></div>
-                </div>
-            </div>
-            <div class="app-window-content">
-                <iframe src="https://tver.jp/"></iframe>
-            </div>
-        </div>
-        <div id="app-news" class="app-window">
-            <div class="app-window-header">
-                <span>ニュース</span>
-                <div class="window-buttons">
-                    <div class="window-button" onclick="closeApp('app-news')"></div>
-                    <div class="window-button yellow"></div>
-                    <div class="window-button green"></div>
-                </div>
-            </div>
-            <div class="app-window-content">
-                <iframe src="https://news.yahoo.co.jp/"></iframe>
-            </div>
-        </div>
-        <div id="app-dictionary" class="app-window">
-            <div class="app-window-header">
-                <span>辞書</span>
-                <div class="window-buttons">
-                    <div class="window-button" onclick="closeApp('app-dictionary')"></div>
-                    <div class="window-button yellow"></div>
-                    <div class="window-button green"></div>
-                </div>
-            </div>
-            <div class="app-window-content">
-                <iframe src="https://amuhiku.netlify.app"></iframe>
-            </div>
-        </div>
-        <div id="app-calculator" class="app-window">
-            <div class="app-window-header">
-                <span>電卓</span>
-                <div class="window-buttons">
-                    <div class="window-button" onclick="closeApp('app-calculator')"></div>
-                    <div class="window-button yellow"></div>
-                    <div class="window-button green"></div>
-                </div>
-            </div>
-            <div class="app-window-content">
-                <iframe src="https://sakalt.github.io/macOS-palo-alto-fiction-/calc.html"></iframe>
-            </div>
-        </div>
-        <div id="app-browser" class="app-window">
-            <div class="app-window-header">
-                <span>ブラウザ</span>
-                <div class="window-buttons">
-                    <div class="window-button" onclick="closeApp('app-browser')"></div>
-                    <div class="window-button yellow"></div>
-                    <div class="window-button green"></div>
-                </div>
-            </div>
-            <div class="app-window-content">
-                <input type="text" id="browser-url" placeholder="URLを入力" style="width: 80%;">
-                <button onclick="loadBrowser()">開く</button>
-                <iframe id="browser-frame" src=""></iframe>
-            </div>
-        </div>
-        <!-- 他のアプリケーションウィンドウ -->
-        <!-- テキストファイル作成ボタン -->
-        <button onclick="createTextFile()">テキストファイルを作成</button>
-        <div id="context-menu" class="context-menu">
-            <div class="context-menu-item" onclick="editTextFile()">編集</div>
-            <div class="context-menu-item" onclick="deleteTextFile()">削除</div>
-        </div>
-    </div>
-    <div class="bottom-bar">
-        <button onclick="openApp('app-weather')">天気アプリ</button>
-        <button onclick="openApp('app-tv')">テレビアプリ</button>
-        <button onclick="openApp('app-news')">ニュースアプリ</button>
-        <button onclick="openApp('app-dictionary')">辞書アプリ</button>
-        <button onclick="openApp('app-calculator')">電卓アプリ</button>
-        <button onclick="openApp('app-browser')">ブラウザアプリ</button>
     </div>
     <script>
-        function openApp(appId) {
-            document.getElementById(appId).style.display = 'flex';
-        }
+        let display = document.getElementById('display');
+        let currentInput = '0';
+        let operator = null;
+        let previousInput = null;
 
-        function closeApp(appId) {
-            document.getElementById(appId).style.display = 'none';
-        }
-
-        function createTextFile() {
-            const textFile = document.createElement('div');
-            textFile.className = 'text-file';
-            textFile.innerHTML = '<img src="textfile.png" alt="Text File"><p>テキストファイル</p>';
-            textFile.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                showContextMenu(e, textFile);
-            });
-            textFile.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                showContextMenu(e, textFile);
-            });
-            document.getElementById('desktop').appendChild(textFile);
-            saveToLocalStorage();
-        }
-
-        function showContextMenu(event, textFile) {
-            const contextMenu = document.getElementById('context-menu');
-            contextMenu.style.left = `${event.pageX}px`;
-            contextMenu.style.top = `${event.pageY}px`;
-            contextMenu.style.display = 'flex';
-            contextMenu.currentTextFile = textFile;
-        }
-
-        function editTextFile() {
-            const textFile = document.getElementById('context-menu').currentTextFile;
-            const newText = prompt('新しい内容を入力してください', textFile.querySelector('p').innerText);
-            if (newText !== null) {
-                textFile.querySelector('p').innerText = newText;
-                saveToLocalStorage();
+        function input(value) {
+            if (currentInput === '0') {
+                currentInput = value;
+            } else {
+                currentInput += value;
             }
-            closeContextMenu();
+            updateDisplay();
         }
 
-        function deleteTextFile() {
-            const textFile = document.getElementById('context-menu').currentTextFile;
-            textFile.remove();
-            saveToLocalStorage();
-            closeContextMenu();
+        function clearDisplay() {
+            currentInput = '0';
+            operator = null;
+            previousInput = null;
+            updateDisplay();
         }
 
-        function closeContextMenu() {
-            document.getElementById('context-menu').style.display = 'none';
-        }
-
-        function saveToLocalStorage() {
-            const desktop = document.getElementById('desktop');
-            localStorage.setItem('desktopContent', desktop.innerHTML);
-        }
-
-        function loadFromLocalStorage() {
-            const savedContent = localStorage.getItem('desktopContent');
-            if (savedContent) {
-                document.getElementById('desktop').innerHTML = savedContent;
-                document.querySelectorAll('.text-file').forEach(file => {
-                    file.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        showContextMenu(e, file);
-                    });
-                    file.addEventListener('touchstart', (e) => {
-                        e.preventDefault();
-                        showContextMenu(e, file);
-                    });
-                });
+        function operate(op) {
+            if (operator !== null) {
+                calculate();
             }
+            operator = op;
+            previousInput = currentInput;
+            currentInput = '0';
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadFromLocalStorage();
-        });
-
-        // ウィンドウのドラッグ機能
-        document.addEventListener('mousedown', function(e) {
-            if (e.target.closest('.app-window-header')) {
-                const header = e.target.closest('.app-window-header');
-                const appWindow = header.parentElement;
-                let shiftX = e.clientX - appWindow.getBoundingClientRect().left;
-                let shiftY = e.clientY - appWindow.getBoundingClientRect().top;
-
-                function moveAt(pageX, pageY) {
-                    appWindow.style.left = pageX - shiftX + 'px';
-                    appWindow.style.top = pageY - shiftY + 'px';
-                }
-
-                function onMouseMove(event) {
-                    moveAt(event.pageX, event.pageY);
-                }
-
-                document.addEventListener('mousemove', onMouseMove);
-
-                document.onmouseup = function() {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.onmouseup = null;
-                };
-
-                header.ondragstart = function() {
-                    return false;
-                };
+        function calculate() {
+            if (operator === null) return;
+            let result;
+            const previous = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            switch (operator) {
+                case '+':
+                    result = previous + current;
+                    break;
+                case '-':
+                    result = previous - current;
+                    break;
+                case '*':
+                    result = previous * current;
+                    break;
+                case '/':
+                    result = previous / current;
+                    break;
+                default:
+                    return;
             }
-        });
-
-        // ブラウザのURLをロードする機能
-        function loadBrowser() {
-            const url = document.getElementById('browser-url').value;
-            document.getElementById('browser-frame').src = url;
+            currentInput = result.toString();
+            operator = null;
+            previousInput = null;
+            updateDisplay();
         }
 
-        // コンテキストメニューを閉じるイベントリスナー
-        document.addEventListener('click', closeContextMenu);
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
     </script>
 </body>
 </html>
