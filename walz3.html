@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>walz 3.0</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #desktop {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: url('background.gif') no-repeat center center fixed;
+            background-size: cover;
+        }
+        #taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #333;
+            display: flex;
+            align-items: center;
+        }
+        #start-button {
+            margin-left: 10px;
+            background: #555;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .window {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 400px;
+            height: 300px;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .window-header {
+            background: linear-gradient(to bottom, #d3d3d3, #a9a9a9);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            border-radius: 10px 10px 0 0;
+        }
+        .window-controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 3px rgba(0,0,0,0.3);
+        }
+        .window-controls .minimize {
+            background: linear-gradient(to bottom, #ffeb3b, #ffc107);
+        }
+        .window-controls .maximize {
+            background: linear-gradient(to bottom, #4caf50, #2e7d32);
+        }
+        .window-controls .close {
+            background: linear-gradient(to bottom, #f44336, #d32f2f);
+        }
+        .window-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+            overflow: auto;
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            resize: none;
+            background: beige;
+            border: none;
+        }
+        #install-modal, #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+        #install-content, #lock-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        input[type="text"], input[type="password"], #calc-buttons button {
+            width: 80%;
+            margin: 10px 0;
+            height: 40px;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <div id="taskbar">
+            <button id="start-button">スタート</button>
+        </div>
+
+        <!-- Bing検索 -->
+        <div id="bing-search" class="window">
+            <div class="window-header">
+                <span class="window-title">Bing検索</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe src="https://www.bing.com" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- ファイルエクスプローラー -->
+        <div id="file-explorer" class="window">
+            <div class="window-header">
+                <span class="window-title">ファイルエクスプローラー</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <input type="file" id="file-upload">
+                <ul id="file-list">
+                    <!-- ファイルリストアイテムがここに表示されます -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- メモ -->
+        <div id="notes" class="window">
+            <div class="window-header">
+                <span class="window-title">メモ</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <textarea id="notes-content" class="no-border"></textarea>
+            </div>
+        </div>
+
+        <!-- ペイント -->
+        <div id="paint" class="window">
+            <div class="window-header">
+                <span class="window-title">ペイント</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe src="https://sakalt.github.io/paint" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- ピンボール -->
+        <div id="pinball" class="window">
+            <div class="window-header">
+                <span class="window-title">ピンボール</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe src="https://sakalt.github.io/paint/pinball.html" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- 設定 -->
+        <div id="settings" class="window">
+            <div class="window-header">
+                <span class="window-title">設定</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <label for="background-url">背景画像のURL:</label>
+                <input type="text" id="background-url">
+                <button id="apply-background">適用</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- インストールモーダル -->
+    <div id="install-modal">
+        <div id="install-content">
+            <h2>walz 3.0のインストール</h2>
+            <input type="text" id="install-name" placeholder="名前">
+            <input type="password" id="install-password" placeholder="パスワード">
+            <button id="install-button">インストール</button>
+            <p id="install-timer" style="display: none;">インストール中...</p>
+        </div>
+    </div>
+
+    <!-- ロック画面 -->
+    <div id="lock-screen">
+        <div id="lock-content">
+            <h2>ロック中</h2>
+            <input type="password" id="lock-password" placeholder="パスワードを入力">
+            <button id="unlock-button">解除</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('start-button');
+            const windows = document.querySelectorAll('.window');
+            const closeButton = document.querySelectorAll('.close');
+            const minimizeButton = document.querySelectorAll('.minimize');
+            const maximizeButton = document.querySelectorAll('.maximize');
+            const installButton = document.getElementById('install-button');
+            const unlockButton = document.getElementById('unlock-button');
+
+            // ウィンドウの表示
+            startButton.addEventListener('click', function() {
+                windows.forEach(win => win.style.display = 'block');
+            });
+
+            // ウィンドウの閉じる
+            closeButton.forEach(btn => btn.addEventListener('click', function() {
+                this.closest('.window').style.display = 'none';
+            }));
+
+            // ウィンドウの最小化
+            minimizeButton.forEach(btn => btn.addEventListener('click', function() {
+                this.closest('.window').style.display = 'none';
+            }));
+
+            // ウィンドウの最大化
+            maximizeButton.forEach(btn => btn.addEventListener('click', function() {
+                const window = this.closest('.window');
+                window.classList.toggle('maximized');
+            }));
+
+            // インストール
+            installButton.addEventListener('click', function() {
+                const name = document.getElementById('install-name').value;
+                const password = document.getElementById('install-password').value;
+                if (name && password) {
+                    localStorage.setItem('walz-name', name);
+                    localStorage.setItem('walz-password', password);
+                    document.getElementById('install-timer').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('install-modal').style.display = 'none';
+                        document.getElementById('lock-screen').style.display = 'flex';
+                    }, 3000);
+                } else {
+                    alert('名前とパスワードを入力してください');
+                }
+            });
+
+            // ロック解除
+            unlockButton.addEventListener('click', function() {
+                const password = document.getElementById('lock-password').value;
+                const storedPassword = localStorage.getItem('walz-password');
+                if (password === storedPassword) {
+                    document.getElementById('lock-screen').style.display = 'none';
+                } else {
+                    alert('パスワードが間違っています');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
