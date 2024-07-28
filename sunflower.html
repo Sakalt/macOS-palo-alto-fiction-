@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>macOS Sunflower (ver26)</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #menu-bar {
+            background-color: #333;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+        }
+
+        #menu-bar .menu {
+            display: flex;
+            gap: 15px;
+        }
+
+        #menu-bar .menu-item {
+            cursor: pointer;
+        }
+
+        #desktop {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding: 20px;
+            background-image: url('background.gif');
+            background-size: cover;
+            position: relative;
+        }
+
+        .app-window {
+            background-color: #fff;
+            color: #000;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin: 10px;
+            display: none;
+            flex-direction: column;
+            width: 400px;
+            height: 300px;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            z-index: 1;
+        }
+
+        .app-window-header {
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .app-window-content {
+            flex: 1;
+            padding: 10px;
+            overflow: auto;
+        }
+
+        .window-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .window-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .window-button.close {
+            background-color: red;
+        }
+
+        .window-button.minimize {
+            background-color: yellow;
+        }
+
+        .window-button.maximize {
+            background-color: green;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            background-color: beige;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .app-icon img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .app-icon p {
+            margin: 0;
+            text-align: center;
+        }
+
+        #context-menu {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        #context-menu button {
+            padding: 5px 10px;
+            border: none;
+            background: #eee;
+            cursor: pointer;
+        }
+
+        #context-menu button:hover {
+            background: #ddd;
+        }
+
+        #lock-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #lock-screen input {
+            margin: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        #settings {
+            display: none;
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 5px;
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            width: 300px;
+        }
+
+        #settings h2 {
+            margin-top: 0;
+        }
+
+        #settings button {
+            margin-top: 10px;
+        }
+
+        #start-menu {
+            display: none;
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 5px;
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #start-menu .app-folder {
+            margin: 10px 0;
+        }
+
+        #start-menu .app-folder button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        #start-menu .app-folder button:hover {
+            background: #e0e0e0;
+        }
+
+        .app-shortcut {
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .app-shortcut img {
+            width: 50px;
+            height: 50px;
+        }
+
+        #context-menu-edit {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        #context-menu-edit button {
+            padding: 5px 10px;
+            border: none;
+            background: #eee;
+            cursor: pointer;
+        }
+
+        #context-menu-edit button:hover {
+            background: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <!-- メニューバー -->
+    <div id="menu-bar">
+        <div class="menu">
+            <span class="menu-item" onclick="toggleLockScreen()">🔒 ロック画面</span>
+            <span class="menu-item" onclick="toggleSettings()">⚙ 設定</span>
+            <span class="menu-item" onclick="toggleStartMenu()">スタートメニュー</span>
+        </div>
+        <div class="menu">
+            <span class="menu-item">2026</span>
+        </div>
+    </div>
+    <!-- デスクトップ -->
+    <div id="desktop">
+        <!-- アプリケーションショートカット -->
+        <div class="app-shortcut" onclick="openApp('app-safari')">
+            <img src="safari.png" alt="Safari">
+            <p>Safari</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-mail')">
+            <img src="mail.png" alt="Mail">
+            <p>Mail</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-messages')">
+            <img src="messages.png" alt="Messages">
+            <p>Messages</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-maps')">
+            <img src="maps.png" alt="Maps">
+            <p>Maps</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-contacts')">
+            <img src="contacts.png" alt="Contacts">
+            <p>Contacts</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-calendar')">
+            <img src="calendar.png" alt="Calendar">
+            <p>Calendar</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-photos')">
+            <img src="photos.png" alt="Photos">
+            <p>Photos</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-music')">
+            <img src="music.png" alt="Music">
+            <p>Music</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-tv')">
+            <img src="tv.png" alt="TV">
+            <p>TV</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-news')">
+            <img src="news.png" alt="News">
+            <p>News</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-reminders')">
+            <img src="reminders.png" alt="Reminders">
+            <p>Reminders</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-notes')">
+            <img src="notes.png" alt="Notes">
+            <p>Notes</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-facetime')">
+            <img src="facetime.png" alt="FaceTime">
+            <p>FaceTime</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-files')">
+            <img src="files.png" alt="Files">
+            <p>Files</p>
+        </div>
+        <div class="app-shortcut" onclick="openApp('app-weather')">
+            <img src="weather.png" alt="Weather">
+            <p>Weather</p>
+        </div>
+    </div>
+
+    <!-- アプリウィンドウ -->
+    <div id="app-safari" class="app-window">
+        <div class="app-window-header">
+            <span>Safari</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-safari')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.apple.com/safari/"></iframe>
+        </div>
+    </div>
+    <div id="app-mail" class="app-window">
+        <div class="app-window-header">
+            <span>Mail</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-mail')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.icloud.com/mail"></iframe>
+        </div>
+    </div>
+    <div id="app-messages" class="app-window">
+        <div class="app-window-header">
+            <span>Messages</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-messages')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://messages.google.com/web/"></iframe>
+        </div>
+    </div>
+    <div id="app-maps" class="app-window">
+        <div class="app-window-header">
+            <span>Maps</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-maps')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://maps.apple.com/"></iframe>
+        </div>
+    </div>
+    <div id="app-contacts" class="app-window">
+        <div class="app-window-header">
+            <span>Contacts</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-contacts')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.icloud.com/contacts"></iframe>
+        </div>
+    </div>
+    <div id="app-calendar" class="app-window">
+        <div class="app-window-header">
+            <span>Calendar</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-calendar')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.icloud.com/calendar"></iframe>
+        </div>
+    </div>
+    <div id="app-photos" class="app-window">
+        <div class="app-window-header">
+            <span>Photos</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-photos')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.icloud.com/photos"></iframe>
+        </div>
+    </div>
+    <div id="app-music" class="app-window">
+        <div class="app-window-header">
+            <span>Music</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-music')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://music.apple.com/"></iframe>
+        </div>
+    </div>
+    <div id="app-tv" class="app-window">
+        <div class="app-window-header">
+            <span>TV</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-tv')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://tv.apple.com/"></iframe>
+        </div>
+    </div>
+    <div id="app-news" class="app-window">
+        <div class="app-window-header">
+            <span>News</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-news')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://news.google.com/"></iframe>
+        </div>
+    </div>
+    <div id="app-reminders" class="app-window">
+        <div class="app-window-header">
+            <span>Reminders</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-reminders')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.icloud.com/reminders"></iframe>
+        </div>
+    </div>
+    <div id="app-notes" class="app-window">
+        <div class="app-window-header">
+            <span>Notes</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-notes')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.icloud.com/notes"></iframe>
+        </div>
+    </div>
+    <div id="app-facetime" class="app-window">
+        <div class="app-window-header">
+            <span>FaceTime</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-facetime')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.apple.com/facetime/"></iframe>
+        </div>
+    </div>
+    <div id="app-files" class="app-window">
+        <div class="app-window-header">
+            <span>Files</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-files')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://www.icloud.com/iclouddrive"></iframe>
+        </div>
+    </div>
+    <div id="app-weather" class="app-window">
+        <div class="app-window-header">
+            <span>Weather</span>
+            <div class="window-buttons">
+                <div class="window-button close" onclick="closeApp('app-weather')"></div>
+                <div class="window-button minimize"></div>
+                <div class="window-button maximize"></div>
+            </div>
+        </div>
+        <div class="app-window-content">
+            <iframe src="https://weather.com/"></iframe>
+        </div>
+    </div>
+
+    <!-- ロックスクリーン -->
+    <div id="lock-screen">
+        <h1>Locked</h1>
+        <input type="password" id="lock-password" placeholder="パスワードを入力">
+        <button onclick="unlockScreen()">Unlock</button>
+    </div>
+
+    <!-- 設定ウィンドウ -->
+    <div id="settings">
+        <h2>Settings</h2>
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password">
+        </div>
+        <button onclick="saveSettings()">Save</button>
+    </div>
+
+    <!-- スタートメニュー -->
+    <div id="start-menu">
+        <div class="app-folder">
+            <button onclick="openApp('app-system-preferences')">System Preferences</button>
+            <button onclick="openApp('app-safari')">Safari</button>
+            <button onclick="openApp('app-mail')">Mail</button>
+            <button onclick="openApp('app-messages')">Messages</button>
+            <button onclick="openApp('app-maps')">Maps</button>
+        </div>
+        <div class="app-folder">
+            <button onclick="openApp('app-contacts')">Contacts</button>
+            <button onclick="openApp('app-calendar')">Calendar</button>
+            <button onclick="openApp('app-photos')">Photos</button>
+            <button onclick="openApp('app-music')">Music</button>
+            <button onclick="openApp('app-tv')">TV</button>
+        </div>
+        <div class="app-folder">
+            <button onclick="openApp('app-news')">News</button>
+            <button onclick="openApp('app-reminders')">Reminders</button>
+            <button onclick="openApp('app-notes')">Notes</button>
+            <button onclick="openApp('app-facetime')">FaceTime</button>
+            <button onclick="openApp('app-files')">Files</button>
+        </div>
+        <div class="app-folder">
+            <button onclick="openApp('app-weather')">Weather</button>
+            <button onclick="openApp('app-itunes')">iTunes</button>
+            <button onclick="openApp('app-appstore')">App Store</button>
+            <button onclick="openApp('app-terminal')">Terminal</button>
+            <button onclick="openApp('app-activitymonitor')">Activity Monitor</button>
+        </div>
+        <div class="app-folder">
+            <button onclick="openApp('app-dictionary')">Dictionary</button>
+            <button onclick="openApp('app-siri')">Siri</button>
+            <button onclick="openApp('app-textedit')">TextEdit</button>
+            <button onclick="openApp('app-preview')">Preview</button>
+            <button onclick="openApp('app-safari')">Safari</button>
+        </div>
+    </div>
+
+    <script>
+        function openApp(appId) {
+            document.getElementById(appId).style.display = 'flex';
+        }
+
+        function closeApp(appId) {
+            document.getElementById(appId).style.display = 'none';
+        }
+
+        function toggleLockScreen() {
+            const lockScreen = document.getElementById('lock-screen');
+            lockScreen.style.display = lockScreen.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function unlockScreen() {
+            const password = document.getElementById('lock-password').value;
+            if (password === '1234') {
+                document.getElementById('lock-screen').style.display = 'none';
+            } else {
+                alert('Incorrect password');
+            }
+        }
+
+        function toggleSettings() {
+            const settings = document.getElementById('settings');
+            settings.style.display = settings.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function saveSettings() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            localStorage.setItem('username', username);
+            localStorage.setItem('password', password);
+            alert('Settings saved');
+            toggleSettings();
+        }
+
+        function toggleStartMenu() {
+            const startMenu = document.getElementById('start-menu');
+            startMenu.style.display = startMenu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
