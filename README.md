@@ -8,3 +8,9 @@ https://sakalt.github.io/macOS-palo-alto-fiction-/leon.html
 https://sakalt.github.io/macOS-palo-alto-fiction-/sunflower.html
 
 
+https://sakalt.github.io/macOS-palo-alto-fiction-/walz.html
+
+
+https://sakalt.github.io/macOS-palo-alto-fiction-/walz2.html
+
+
