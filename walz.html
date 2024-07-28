@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>walz 1.0</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #desktop {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        #taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #333;
+            display: flex;
+            align-items: center;
+        }
+        #start-button {
+            margin-left: 10px;
+            background: #555;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .window {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 400px;
+            height: 300px;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .window-header {
+            background: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+        .window-controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .window-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            resize: none;
+        }
+        input[type="text"], #calc-buttons button {
+            width: 24%;
+            margin: 1%;
+            height: 40px;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <div id="taskbar">
+            <button id="start-button">Start</button>
+        </div>
+
+        <!-- Text Editor -->
+        <div id="text-editor" class="window">
+            <div class="window-header">
+                <span class="window-title">Text Editor</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <textarea id="editor-content"></textarea>
+            </div>
+        </div>
+
+        <!-- Calculator -->
+        <div id="calculator" class="window">
+            <div class="window-header">
+                <span class="window-title">Calculator</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <input type="text" id="calc-display" disabled>
+                <div id="calc-buttons">
+                    <button>7</button><button>8</button><button>9</button><button>/</button>
+                    <button>4</button><button>5</button><button>6</button><button>*</button>
+                    <button>1</button><button>2</button><button>3</button><button>-</button>
+                    <button>0</button><button>.</button><button>=</button><button>+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Browser -->
+        <div id="browser" class="window">
+            <div class="window-header">
+                <span class="window-title">Browser</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe id="browser-frame" src="https://www.bing.com" style="width: 100%; height: 100%;"></iframe>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div id="notes" class="window">
+            <div class="window-header">
+                <span class="window-title">Notes</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <textarea id="notes-content"></textarea>
+            </div>
+        </div>
+
+        <!-- File Explorer -->
+        <div id="file-explorer" class="window">
+            <div class="window-header">
+                <span class="window-title">File Explorer</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <ul id="file-list">
+                    <!-- File list items will be populated here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div id="settings" class="window">
+            <div class="window-header">
+                <span class="window-title">Settings</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <label for="background-url">Background URL:</label>
+                <input type="text" id="background-url">
+                <button id="apply-background">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('start-button');
+            const windows = document.querySelectorAll('.window');
+            const closeButton = document.querySelectorAll('.close');
+            const minimizeButton = document.querySelectorAll('.minimize');
+            const maximizeButton = document.querySelectorAll('.maximize');
+
+            startButton.addEventListener('click', () => {
+                windows.forEach(win => win.style.display = 'block');
+            });
+
+            closeButton.forEach(btn => btn.addEventListener('click', (e) => {
+                e.target.closest('.window').style.display = 'none';
+            }));
+
+            minimizeButton.forEach(btn => btn.addEventListener('click', (e) => {
+                e.target.closest('.window').style.display = 'none';
+            }));
+
+            maximizeButton.forEach(btn => btn.addEventListener('click', (e) => {
+                const win = e.target.closest('.window');
+                if (win.classList.contains('maximized')) {
+                    win.classList.remove('maximized');
+                    win.style.width = '400px';
+                    win.style.height = '300px';
+                } else {
+                    win.classList.add('maximized');
+                    win.style.width = '100%';
+                    win.style.height = 'calc(100% - 40px)';
+                }
+            }));
+
+            // Drag and Drop functionality
+            windows.forEach(win => {
+                let isDragging = false;
+                let offsetX, offsetY;
+                const header = win.querySelector('.window-header');
+                header.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    offsetX = e.clientX - win.offsetLeft;
+                    offsetY = e.clientY - win.offsetTop;
+                    document.addEventListener('mousemove', onMouseMove);
+                });
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    document.removeEventListener('mousemove', onMouseMove);
+                });
+                function onMouseMove(e) {
+                    if (isDragging) {
+                        win.style.left = `${e.clientX - offsetX}px`;
+                        win.style.top = `${e.clientY - offsetY}px`;
+                    }
+                }
+            });
+
+            // Load and save Text Editor content
+            const editorContent = document.getElementById('editor-content');
+            if (localStorage.getItem('editorContent')) {
+                editorContent.value = localStorage.getItem('editorContent');
+            }
+            editorContent.addEventListener('input', () => {
+                localStorage.setItem('editorContent', editorContent.value);
+            });
+
+            // Calculator functionality
+            const calcDisplay = document.getElementById('calc-display');
+            const calcButtons = document.querySelectorAll('#calc-buttons button');
+            calcButtons.forEach(btn => btn.addEventListener('click', () => {
+                if (btn.innerText === '=') {
+                    calcDisplay.value = eval(calcDisplay.value);
+                } else {
+                    calcDisplay.value += btn.innerText;
+                }
+            }));
+
+            // Load and save Notes content
+            const notesContent = document.getElementById('notes-content');
+            if (localStorage.getItem('notesContent')) {
+                notesContent.value = localStorage.getItem('notesContent');
+            }
+            notesContent.addEventListener('input', () => {
+                localStorage.setItem('notesContent', notesContent.value);
+            });
+
+            // Settings functionality
+            const backgroundUrlInput = document.getElementById('background-url');
+            const applyBackgroundButton = document.getElementById('apply-background');
+            if (localStorage.getItem('backgroundUrl')) {
+                document.getElementById('desktop').style.backgroundImage = `url(${localStorage.getItem('backgroundUrl')})`;
+                backgroundUrlInput.value = localStorage.getItem('backgroundUrl');
+            }
+            applyBackgroundButton.addEventListener('click', () => {
+                const url = backgroundUrlInput.value;
+                document.getElementById('desktop').style.backgroundImage = `url(${url})`;
+                localStorage.setItem('backgroundUrl', url);
+            });
+        });
+    </script>
+</body>
+</html>
