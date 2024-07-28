@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>walz 2.0</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #desktop {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: url('background.gif') no-repeat center center fixed;
+            background-size: cover;
+        }
+        #taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #333;
+            display: flex;
+            align-items: center;
+        }
+        #start-button {
+            margin-left: 10px;
+            background: #555;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .window {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 400px;
+            height: 300px;
+            background: beige;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
+            border-radius: 10px;
+        }
+        .window-header {
+            background: linear-gradient(to bottom, #ffcccc, #cc3333);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            border-radius: 10px 10px 0 0;
+        }
+        .window-controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        .window-controls .minimize {
+            background: yellow;
+        }
+        .window-controls .maximize {
+            background: green;
+        }
+        .window-controls .close {
+            background: red;
+        }
+        .window-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+        }
+        .no-border {
+            border: none;
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            resize: none;
+            background: beige;
+            border: none;
+        }
+        input[type="text"], #calc-buttons button {
+            width: 24%;
+            margin: 1%;
+            height: 40px;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <div id="taskbar">
+            <button id="start-button">Start</button>
+        </div>
+
+        <!-- Bing Search -->
+        <div id="bing-search" class="window">
+            <div class="window-header">
+                <span class="window-title">Bing Search</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe src="https://www.bing.com" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- File Explorer -->
+        <div id="file-explorer" class="window">
+            <div class="window-header">
+                <span class="window-title">File Explorer</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <input type="file" id="file-upload">
+                <ul id="file-list">
+                    <!-- File list items will be populated here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div id="notes" class="window">
+            <div class="window-header">
+                <span class="window-title">Notes</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <textarea id="notes-content" class="no-border"></textarea>
+            </div>
+        </div>
+
+        <!-- Paint -->
+        <div id="paint" class="window">
+            <div class="window-header">
+                <span class="window-title">Paint</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <iframe src="https://sakalt.github.io/paint" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div id="settings" class="window">
+            <div class="window-header">
+                <span class="window-title">Settings</span>
+                <div class="window-controls">
+                    <button class="minimize">_</button>
+                    <button class="maximize">□</button>
+                    <button class="close">X</button>
+                </div>
+            </div>
+            <div class="window-content">
+                <label for="background-url">Background URL:</label>
+                <input type="text" id="background-url">
+                <button id="apply-background">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('start-button');
+            const windows = document.querySelectorAll('.window');
+            const closeButton = document.querySelectorAll('.close');
+            const minimizeButton = document.querySelectorAll('.minimize');
+            const maximizeButton = document.querySelectorAll('.maximize');
+            const fileUpload = document.getElementById('file-upload');
+            const fileList = document.getElementById('file-list');
+            const notesContent = document.getElementById('notes-content');
+            const backgroundUrlInput = document.getElementById('background-url');
+            const applyBackgroundButton = document.getElementById('apply-background');
+
+            // Show windows on start button click
+            startButton.addEventListener('click', () => {
+                windows.forEach(win => win.style.display = 'block');
+            });
+
+            // Close window
+            closeButton.forEach(btn => btn.addEventListener('click', (e) => {
+                e.target.closest('.window').style.display = 'none';
+            }));
+
+            // Minimize window
+            minimizeButton.forEach(btn => btn.addEventListener('click', (e) => {
+                e.target.closest('.window').style.display = 'none';
+            }));
+
+            // Maximize window
+            maximizeButton.forEach(btn => btn.addEventListener('click', (e) => {
+                const win = e.target.closest('.window');
+                if (win.classList.contains('maximized')) {
+                    win.classList.remove('maximized');
+                    win.style.width = '400px';
+                    win.style.height = '300px';
+                } else {
+                    win.classList.add('maximized');
+                    win.style.width = '100%';
+                    win.style.height = 'calc(100% - 40px)';
+                }
+            }));
+
+            // Drag and drop functionality
+            windows.forEach(win => {
+                let isDragging = false;
+                let offsetX, offsetY;
+                const header = win.querySelector('.window-header');
+                header.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    offsetX = e.clientX - win.offsetLeft;
+                    offsetY = e.clientY - win.offsetTop;
+                    document.addEventListener('mousemove', onMouseMove);
+                });
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    document.removeEventListener('mousemove', onMouseMove);
+                });
+                function onMouseMove(e) {
+                    if (isDragging) {
+                        win.style.left = `${e.clientX - offsetX}px`;
+                        win.style.top = `${e.clientY - offsetY}px`;
+                    }
+                }
+            });
+
+            // Load and save notes content
+            if (localStorage.getItem('notesContent')) {
+                notesContent.value = localStorage.getItem('notesContent');
+            }
+            notesContent.addEventListener('input', () => {
+                localStorage.setItem('notesContent', notesContent.value);
+            });
+
+            // File upload and management
+            fileUpload.addEventListener('change', () => {
+                const file = fileUpload.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const li = document.createElement('li');
+                        li.innerText = file.name;
+                        li.dataset.content = e.target.result;
+                        fileList.appendChild(li);
+                        saveFiles();
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            fileList.addEventListener('dblclick', (e) => {
+                if (e.target.tagName === 'LI') {
+                    const newName = prompt('Enter new name', e.target.innerText);
+                    if (newName) {
+                        e.target.innerText = newName;
+                        saveFiles();
+                    }
+                }
+            });
+
+            fileList.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                if (e.target.tagName === 'LI') {
+                    if (confirm('Do you want to delete this file?')) {
+                        e.target.remove();
+                        saveFiles();
+                    }
+                }
+            });
+
+            function saveFiles() {
+                const files = [];
+                fileList.querySelectorAll('li').forEach(li => {
+                    files.push({
+                        name: li.innerText,
+                        content: li.dataset.content
+                    });
+                });
+                localStorage.setItem('files', JSON.stringify(files));
+            }
+
+            function loadFiles() {
+                const files = JSON.parse(localStorage.getItem('files') || '[]');
+                files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.innerText = file.name;
+                    li.dataset.content = file.content;
+                    fileList.appendChild(li);
+                });
+            }
+            loadFiles();
+
+            fileList.addEventListener('dblclick', (e) => {
+                if (e.target.tagName === 'LI') {
+                    const content = e.target.dataset.content;
+                    if (content.startsWith('data:image')) {
+                        document.getElementById('desktop').style.backgroundImage = `url(${content})`;
+                        localStorage.setItem('backgroundUrl', content);
+                    } else if (content.startsWith('data:text')) {
+                        notesContent.value = atob(content.split(',')[1]);
+                        localStorage.setItem('notesContent', notesContent.value);
+                    }
+                }
+            });
+
+            // Apply background from URL
+            applyBackgroundButton.addEventListener('click', () => {
+                const url = backgroundUrlInput.value;
+                document.getElementById('desktop').style.backgroundImage = `url(${url})`;
+                localStorage.setItem('backgroundUrl', url);
+            });
+
+            // Load saved background
+            if (localStorage.getItem('backgroundUrl')) {
+                document.getElementById('desktop').style.backgroundImage = `url(${localStorage.getItem('backgroundUrl')})`;
+                backgroundUrlInput.value = localStorage.getItem('backgroundUrl');
+            }
+        });
+    </script>
+</body>
+</html>
