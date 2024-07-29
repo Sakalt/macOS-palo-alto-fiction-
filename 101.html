@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>macOS 101</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        #desktop {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        #taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #333;
+            display: flex;
+            align-items: center;
+        }
+        #start-menu {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-wrap: wrap;
+            padding: 10px;
+        }
+        #start-button {
+            margin-left: 10px;
+            background: #555;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        .window {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 600px;
+            height: 400px;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .window-header {
+            background: linear-gradient(to bottom, #d3d3d3, #a9a9a9);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            border-radius: 10px 10px 0 0;
+        }
+        .window-controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 3px rgba(0,0,0,0.3);
+        }
+        .window-controls .minimize {
+            background: linear-gradient(to bottom, #ffeb3b, #ffc107);
+        }
+        .window-controls .maximize {
+            background: linear-gradient(to bottom, #4caf50, #2e7d32);
+        }
+        .window-controls .close {
+            background: linear-gradient(to bottom, #f44336, #d32f2f);
+        }
+        .window-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+            overflow: auto;
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            resize: none;
+            background: beige;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop">
+        <div id="taskbar">
+            <button id="start-button">スタート</button>
+        </div>
+        <div id="start-menu">
+            <div class="app-icon" data-app="finder">Finder</div>
+            <div class="app-icon" data-app="safari">Safari</div>
+            <div class="app-icon" data-app="mail">Mail</div>
+            <div class="app-icon" data-app="messages">Messages</div>
+            <div class="app-icon" data-app="notes">Notes</div>
+            <div class="app-icon" data-app="calendar">Calendar</div>
+            <div class="app-icon" data-app="reminders">Reminders</div>
+            <div class="app-icon" data-app="photos">Photos</div>
+            <div class="app-icon" data-app="music">Music</div>
+            <div class="app-icon" data-app="tv">TV</div>
+            <div class="app-icon" data-app="news">News</div>
+            <div class="app-icon" data-app="maps">Maps</div>
+            <div class="app-icon" data-app="facetime">FaceTime</div>
+            <div class="app-icon" data-app="contacts">Contacts</div>
+            <div class="app-icon" data-app="settings">Settings</div>
+        </div>
+
+        <div id="finder" class="window"></div>
+        <div id="safari" class="window">
+            <div class="window-content">
+                <iframe src="https://www.apple.com/safari/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="mail" class="window">
+            <div class="window-content">
+                <iframe src="https://mail.google.com/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="messages" class="window">
+            <div class="window-content">
+                <textarea placeholder="ここにメッセージを入力..."></textarea>
+            </div>
+        </div>
+        <div id="notes" class="window">
+            <div class="window-content">
+                <textarea placeholder="ここにメモを入力..."></textarea>
+            </div>
+        </div>
+        <div id="calendar" class="window">
+            <div class="window-content">
+                <iframe src="https://calendar.google.com/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="reminders" class="window">
+            <div class="window-content">
+                <textarea placeholder="ここにリマインダーを入力..."></textarea>
+            </div>
+        </div>
+        <div id="photos" class="window">
+            <div class="window-content">
+                <iframe src="https://photos.google.com/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="music" class="window">
+            <div class="window-content">
+                <iframe src="https://music.apple.com/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="tv" class="window">
+            <div class="window-content">
+                <iframe src="https://tv.apple.com/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="news" class="window">
+            <div class="window-content">
+                <iframe src="https://www.apple.com/newsroom/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="maps" class="window">
+            <div class="window-content">
+                <iframe src="https://www.google.com/maps/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="facetime" class="window">
+            <div class="window-content">
+                <iframe src="https://www.apple.com/facetime/" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+        <div id="contacts" class="window">
+            <div class="window-content">
+                <textarea placeholder="ここに連絡先を入力..."></textarea>
+            </div>
+        </div>
+        <div id="settings" class="window">
+            <div class="window-content">
+                <h3>設定</h3>
+                <label for="background-url">背景画像のURL:</label>
+                <input type="text" id="background-url" placeholder="画像のURLを入力">
+                <button id="apply-background-button">背景を適用</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('start-button');
+            const startMenu = document.getElementById('start-menu');
+            const appIcons = document.querySelectorAll('.app-icon');
+            const windows = document.querySelectorAll('.window');
+            const closeButton = document.querySelectorAll('.close');
+            const minimizeButton = document.querySelectorAll('.minimize');
+            const maximizeButton = document.querySelectorAll('.maximize');
+
+            startButton.addEventListener('click', function() {
+                startMenu.style.display = startMenu.style.display === 'none' ? 'flex' : 'none';
+            });
+
+            appIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const app = document.getElementById(this.dataset.app);
+                    app.style.display = 'block';
+                    startMenu.style.display = 'none';
+                });
+            });
+
+            windows.forEach(win => {
+                win.innerHTML = `
+                    <div class="window-header">
+                        <div class="window-controls">
+                            <button class="close"></button>
+                            <button class="minimize"></button>
+                            <button class="maximize"></button>
+                        </div>
+                    </div>
+                    <div class="window-content">${win.innerHTML}</div>
+                `;
+            });
+
+            document.body.addEventListener('click', function(event) {
+                if (!startMenu.contains(event.target) && event.target !== startButton) {
+                    startMenu.style.display = 'none';
+                }
+            });
+
+            document.getElementById('apply-background-button').addEventListener('click', function() {
+                const url = document.getElementById('background-url').value;
+                document.getElementById('desktop').style.backgroundImage = `url(${url})`;
+            });
+
+            document.querySelectorAll('.window-controls .close').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.window').style.display = 'none';
+                });
+            });
+
+            document.querySelectorAll('.window-controls .minimize').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.window').style.display = 'none';
+                });
+            });
+
+            document.querySelectorAll('.window-controls .maximize').forEach(button => {
+                button.addEventListener('click', function() {
+                    const win = this.closest('.window');
+                    if (win.classList.contains('maximized')) {
+                        win.classList.remove('maximized');
+                        win.style.width = '600px';
+                        win.style.height = '400px';
+                    } else {
+                        win.classList.add('maximized');
+                        win.style.width = '100%';
+                        win.style.height = '100%';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
