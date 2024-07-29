@@ -13,6 +13,8 @@ https://sakalt.github.io/macOS-palo-alto-fiction-/walz.html
 
 https://sakalt.github.io/macOS-palo-alto-fiction-/walz2.html
 https://sakalt.github.io/macOS-palo-alto-fiction-/walz3.html
+https://sakalt.github.io/macOS-palo-alto-fiction-/101.html
+
 
 
 
